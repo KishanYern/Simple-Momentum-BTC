@@ -25,7 +25,3 @@ data/
 # OS
 .DS_Store
 Thumbs.db
-
-# Output plots
-plots/
-*.png
