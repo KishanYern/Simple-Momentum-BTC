@@ -76,7 +76,9 @@ def plot_price_chart(df: pd.DataFrame, trades_df: pd.DataFrame) -> None:
     ax.plot(idx, df[cols["ema_fast"]], color="#58a6ff", linewidth=1.0,
             label=f"EMA-{config.EMA_FAST}", zorder=3)
     ax.plot(idx, df[cols["ema_slow"]], color="#f78166", linewidth=1.0,
-            label=f"EMA-{config.EMA_SLOW}", zorder=3)
+            label=f"EMA-{config.EMA_SLOW} (signal)", zorder=3)
+    ax.plot(idx, df[cols["trailing_stop_ema"]], color="#d2a8ff", linewidth=1.0,
+            linestyle="--", label=f"EMA-{config.TRAILING_STOP_EMA_LEN} (stop)", zorder=3)
 
     # Bollinger Bands
     bb_u = df[cols["bb_upper"]]

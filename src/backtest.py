@@ -16,10 +16,10 @@ Take-Profit (TP)
 
 Trailing Stop-Loss
 ──────────────────
-• Long  stop = 20-EMA of the *current* bar (checked every bar while in trade).
-  Exit if bar's low  <= EMA_20.  Exit price = EMA_20 value.
-• Short stop = 20-EMA of the *current* bar.
-  Exit if bar's high >= EMA_20.  Exit price = EMA_20 value.
+• Long  stop = 100-EMA of the *current* bar (checked every bar while in trade).
+  Exit if bar's low  <= EMA_100.  Exit price = EMA_100 value.
+• Short stop = 100-EMA of the *current* bar.
+  Exit if bar's high >= EMA_100.  Exit price = EMA_100 value.
 
 Exit priority within a bar: TP checked against high/low first; if not
 triggered, trailing stop is checked.
@@ -99,7 +99,7 @@ def run_backtest(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
         Equity value at the *close* of every bar (index = UTC timestamps).
     """
     cols       = get_column_names(df)
-    ema_col    = cols["ema_slow"]
+    ema_col    = cols["trailing_stop_ema"]   # 100-EMA: wider stop, decoupled from scoring
     atr_col    = cols["atr"]
 
     equity     = config.INITIAL_CAPITAL

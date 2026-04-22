@@ -10,8 +10,8 @@ Scoring table
 -------------
 Signal                             Long (+)    Short (−)
 ─────────────────────────────────  ─────────   ─────────
-MACD histogram zero-line cross        +2           −2
-RSI directional bias (>/<50)          +1           −1
+MACD histogram crossover pulse        +2           −2
+RSI directional bias (>/< 50)         +1           −1
 Close vs 20-EMA                       +1           −1
 Bollinger Band width expanding        +1           −1
 Stochastic %K vs %D                   +1           −1
@@ -41,18 +41,23 @@ logger = logging.getLogger(__name__)
 
 def _macd_cross_signal(hist: pd.Series) -> pd.Series:
     """
-    Return +1 when the MACD histogram crosses from negative to positive
-    (or is positive after a recent cross), −1 for the opposite, 0 otherwise.
+    Return +1 on the single bar where the MACD histogram crosses from
+    negative to positive, −1 on the bar it crosses from positive to negative,
+    and 0 on all other bars.
 
-    We use a simple sign-change detection: a bullish cross is registered when
-    the histogram is positive *and* was negative on the prior bar.  The signal
-    persists as +1 / −1 for as long as the histogram stays on the same side,
-    decaying back to 0 only when it crosses again.  This gives the cross
-    condition its full +2 weight during a sustained trend.
+    Emitting a pulse only on the crossover bar — rather than persisting the
+    sign indefinitely — ensures the +2 MACD weight is a momentary signal
+    tied to the momentum shift itself.  On subsequent bars the score reverts
+    to 0, so re-entry after a stop-out requires all four remaining indicators
+    to realign rather than benefiting from a stale MACD baseline.
     """
-    sign = np.sign(hist)
-    # Forward-fill the sign so the crossover value persists
-    signal = sign.replace(0, np.nan).ffill().fillna(0).astype(int)
+    # Forward-fill histogram sign to track the prevailing side without gaps
+    filled_sign = np.sign(hist).replace(0, np.nan).ffill().fillna(0).astype(int)
+    prev_sign   = filled_sign.shift(1).fillna(0).astype(int)
+    # Fire +1 / −1 only on the exact bar where the sign changes
+    crossover_mask = filled_sign != prev_sign
+    signal = pd.Series(0, index=hist.index, dtype=int)
+    signal[crossover_mask] = filled_sign[crossover_mask]
     return signal
 
 

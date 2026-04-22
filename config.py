@@ -34,8 +34,9 @@ MACD_SIGNAL       = 9
 STOCH_K           = 14
 STOCH_D           = 3
 STOCH_SMOOTH_K    = 3
-EMA_FAST          = 9
-EMA_SLOW          = 20
+EMA_FAST               = 20
+EMA_SLOW               = 50
+TRAILING_STOP_EMA_LEN  = 100   # wider EMA used only for the trailing stop anchor
 ATR_LENGTH        = 14
 BB_LENGTH         = 20
 BB_STD            = 2.0
@@ -64,15 +65,15 @@ ENTRY_THRESHOLD   = 5   # score >=5 long, score <=-5 short
 # Rolling window (in bars) for computing ATR / BB-width percentile thresholds
 REGIME_WINDOW     = 100
 # Percentile below which the market is considered "too quiet" to trade
-REGIME_PERCENTILE = 25
+REGIME_PERCENTILE = 50
 
 # ---------------------------------------------------------------------------
 # Risk management
 # ---------------------------------------------------------------------------
 # Take-profit = entry price ± (TP_ATR_MULT × ATR at entry)
-TP_ATR_MULT       = 2.0
-# Trailing stop anchor: 20-EMA value at each bar while in trade
-TRAILING_STOP_EMA = EMA_SLOW
+TP_ATR_MULT       = 2.2
+# Trailing stop anchor: the EMA_TRAILING_STOP_LEN EMA, checked every bar while in trade.
+# Deliberately wider than EMA_SLOW so the stop and the entry-scoring EMA are decoupled.
 
 # ---------------------------------------------------------------------------
 # Backtest

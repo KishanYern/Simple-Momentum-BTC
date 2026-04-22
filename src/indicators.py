@@ -81,9 +81,11 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
         append=True,
     )
 
-    logger.info("Computing EMA(%d) and EMA(%d) …", config.EMA_FAST, config.EMA_SLOW)
+    logger.info("Computing EMA(%d), EMA(%d), and EMA(%d) …",
+                config.EMA_FAST, config.EMA_SLOW, config.TRAILING_STOP_EMA_LEN)
     df.ta.ema(length=config.EMA_FAST, append=True)
     df.ta.ema(length=config.EMA_SLOW, append=True)
+    df.ta.ema(length=config.TRAILING_STOP_EMA_LEN, append=True)
 
     logger.info("Computing ATR(%d) …", config.ATR_LENGTH)
     df.ta.atr(length=config.ATR_LENGTH, append=True)
@@ -125,6 +127,7 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
         f"STOCHk_{config.STOCH_K}_{config.STOCH_SMOOTH_K}_{config.STOCH_D}",
         f"EMA_{config.EMA_FAST}",
         f"EMA_{config.EMA_SLOW}",
+        f"EMA_{config.TRAILING_STOP_EMA_LEN}",
         f"ATRr_{config.ATR_LENGTH}",
         bb_width_col,
         "bb_width_prev",
@@ -161,17 +164,18 @@ def get_column_names(df: "pd.DataFrame | None" = None) -> dict[str, str]:
         bb_width = f"BBB_{config.BB_LENGTH}_{config.BB_STD}_{config.BB_STD}"
 
     return {
-        "rsi":           f"RSI_{config.RSI_LENGTH}",
-        "macd_hist":     f"MACDh_{config.MACD_FAST}_{config.MACD_SLOW}_{config.MACD_SIGNAL}",
-        "macd_line":     f"MACD_{config.MACD_FAST}_{config.MACD_SLOW}_{config.MACD_SIGNAL}",
-        "stoch_k":       f"STOCHk_{config.STOCH_K}_{config.STOCH_SMOOTH_K}_{config.STOCH_D}",
-        "stoch_d":       f"STOCHd_{config.STOCH_K}_{config.STOCH_SMOOTH_K}_{config.STOCH_D}",
-        "ema_fast":      f"EMA_{config.EMA_FAST}",
-        "ema_slow":      f"EMA_{config.EMA_SLOW}",
-        "atr":           f"ATRr_{config.ATR_LENGTH}",
-        "bb_lower":      bb_lower,
-        "bb_mid":        bb_mid,
-        "bb_upper":      bb_upper,
-        "bb_width":      bb_width,
-        "bb_width_prev": "bb_width_prev",
+        "rsi":                f"RSI_{config.RSI_LENGTH}",
+        "macd_hist":          f"MACDh_{config.MACD_FAST}_{config.MACD_SLOW}_{config.MACD_SIGNAL}",
+        "macd_line":          f"MACD_{config.MACD_FAST}_{config.MACD_SLOW}_{config.MACD_SIGNAL}",
+        "stoch_k":            f"STOCHk_{config.STOCH_K}_{config.STOCH_SMOOTH_K}_{config.STOCH_D}",
+        "stoch_d":            f"STOCHd_{config.STOCH_K}_{config.STOCH_SMOOTH_K}_{config.STOCH_D}",
+        "ema_fast":           f"EMA_{config.EMA_FAST}",
+        "ema_slow":           f"EMA_{config.EMA_SLOW}",
+        "trailing_stop_ema": f"EMA_{config.TRAILING_STOP_EMA_LEN}",
+        "atr":                f"ATRr_{config.ATR_LENGTH}",
+        "bb_lower":           bb_lower,
+        "bb_mid":             bb_mid,
+        "bb_upper":           bb_upper,
+        "bb_width":           bb_width,
+        "bb_width_prev":      "bb_width_prev",
     }
